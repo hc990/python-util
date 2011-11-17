@@ -15,9 +15,9 @@ class DrawDrogram(object):
         Constructor
         ''' 
     def drawdendrogram(self,jpeg='aaa.jpg'):
-        img=Image.new('RGB',(20,20),(255,255,255))
+        img=Image.new('RGB',(200,200),(255,255,255))
         draw=ImageDraw.Draw(img)
-        draw.line((0,10,20,15),fill=(111,11,111))
+        draw.line((0,0,200,200),fill=(100,100,100))
         img.save(jpeg,'Png')
         
     
