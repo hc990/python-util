@@ -4,7 +4,7 @@ Created on 2011/11/12
 @author: ishida
 '''
 
-class DocRead(object):
+class docRead(object):
     '''
     classdocs
     '''
@@ -16,7 +16,7 @@ class DocRead(object):
         Constructor
         '''
     def readfile(self,filename):
-        file=open(filename,access_mode='r')
+        file=open(filename)
         lines = [line for line in file]
         colnames = lines[0].strip('\t')[1:]
         rownames=[]
@@ -27,6 +27,11 @@ class DocRead(object):
             data.append([float(x) for x in p[1:]])
         return rownames,colnames,data
     
-        
+def main():
+    docRead=docRead()  
+    blognames,words,data=docRead.readfile('blogdata.txt')        
+    print blognames
+    print words
+
 if __name__ == '__main__':
-   pass
+    main()
