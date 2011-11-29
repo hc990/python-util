@@ -10,8 +10,10 @@ import re
 from DB import connection
 
 ignorewords={'the':1,'of':1,'to':1,'and':1,'a':1,'in':1,'is':1,'it':1}
+index_urls={}
 
-class crawler:
+class crawler: 
+   
   def __init__(self):
       pass  
     
@@ -37,6 +39,7 @@ class crawler:
               if url.find("'")!=-1: continue
               url=url.split('#')[0]  # remove location portion
               if url[0:4]=='http' and not self.isindexed(url):
+                self.setindexs(url)
                 newpages[url]=1 
                 urls.append(url)           
                 linkText=self.gettitleonly(link)  #first step
@@ -111,7 +114,13 @@ class crawler:
   
   # Return true if this url is already indexed
   def isindexed(self,url):
-    return False
+    if url in index_urls:
+        return True
+    else:
+        return False
+
+  def setindexs(self,url):
+    index_urls[url]=1
 
 def main():
     cr=crawler()
