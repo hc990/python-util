@@ -78,7 +78,7 @@ class crawler:
   def gettitleonly(self,soup):
     v=soup.string
     if v==None:   
-      c=soup.contents
+      c=soup.contents     
       resulttext=''
       for t in c:
         subtext=self.gettextonly(t)
