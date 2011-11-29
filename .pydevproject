@@ -9,5 +9,7 @@
 </pydev_pathproperty>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/PIL-1.1.7-py2.7-macosx-10.3-fat.egg</path>
+<path>/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pymongo-2.0.1-py2.7-macosx-10.3-fat.egg</path>
+<path>/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/MySQL_python-1.2.3-py2.7-macosx-10.3-fat.egg</path>
 </pydev_pathproperty>
 </pydev_project>

@@ -41,18 +41,11 @@ def kcluster(rows,distance=hcluster.pearson,k=4):
                  clusters[i]=avgs
     
         return bestmatches
-
+  
                           
 def main():
-    blognames,words,data=hcluster.readfile('blogdata.txt')
-    kclust=kcluster(data,k=10)
-    print [blognames[r] for r in kclust[0]]
-    print [blognames[r] for r in kclust[1]]
-    print [blognames[r] for r in kclust[2]]
-    print [blognames[r] for r in kclust[3]]
-    print [blognames[r] for r in kclust[4]]
-    print [blognames[r] for r in kclust[9]]
-    print kclust
+   print range(1,3)
+   print range(3)
 if __name__ == '__main__':
    main() 
  
