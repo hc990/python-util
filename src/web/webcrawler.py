@@ -1,76 +1,89 @@
 '''
 Created on 2011/11/22
 
-@author: ishida
+@author:hatless
+Begin from demo,change something in the demo,and try that,observe anything wrong
+or anything out
+
+let's start my job from crawling webs.
+u should pay attention to something that below:
+1.
+2
+3
+
+
+
+
+
 '''
-import urllib2
-from BeautifulSoup import BeautifulSoup
+import urllib2  
+from BeautifulSoup import BeautifulSoup  
 from urlparse import urljoin
 import re
-from DB import connection
+from db import connection
 
-ignorewords={'the':1,'of':1,'to':1,'and':1,'a':1,'in':1,'is':1,'it':1}
-index_urls={}
+ignorewords = {'the':1, 'of':1, 'to':1, 'and':1, 'a':1, 'in':1, 'is':1, 'it':1}
+index_urls = {}
 
 class crawler: 
    
   def __init__(self):
-      pass  
+    pass  
     
-  def crawl(self,pages,depth=2):
+  def crawl(self, pages, depth=2):
     for i in range(depth):
-      newpages={}
+      newpages = {}
       for page in pages:
         try:
-          c=urllib2.urlopen(page)
+          c = urllib2.urlopen(page)
         except:
           print "Could not open %s" % page
           continue
         try:
-          soup=BeautifulSoup(c.read())
+          soup = BeautifulSoup(c.read())
 #          self.addtoindex(page,soup)#be careful for this step
-          words=self.separatewords(self.gettextonly(soup))
-          links=soup('a')
-          urls=[]
-          linkTexts=[]
+          words = self.separatewords(self.gettextonly(soup))
+          links = soup('a')
+          urls = []
+          linkTexts = []
           for link in links:
             if ('href' in dict(link.attrs)):
-              url=urljoin(page,link['href'])
-              if url.find("'")!=-1: continue
-              url=url.split('#')[0]  # remove location portion
-              if url[0:4]=='http' and not self.isindexed(url):
+              url = urljoin(page, link['href'])
+              if url.find("'") != -1: continue
+              url = url.split('#')[0]  # remove location portion
+              if url[0:4] == 'http' and not self.isindexed(url):
                 self.setindexs(url)
-                newpages[url]=1 
+                newpages[url] = 1 
                 urls.append(url)           
-                linkText=self.gettitleonly(link)  #first step
-                linkTexts.append(self.separatewords(linkText))
-          self.addlinkref(page,urls,linkTexts,words)#save to mongodb
+                linkText = self.gettitleonly(link)  #first step
+                linkTexts.append(self.cutwords(len(urls) - 1, linkText))
+          self.addlinkref(page, urls, linkTexts, words)#save to mongodb
         except:
           print "Could not parse page %s" % page
 
-      pages=newpages
+      pages = newpages
       
  
-  def gettextonly(self,soup):
-    resulttext=''
+  def gettextonly(self, soup):
+    resulttext = ''
     list = soup('p') 
     for p in list: 
-        v=p.string
-        if v==None:  
-          resulttext+=self.gettext(p)
+        v = p.string
+        if v == None:  
+          resulttext += self.gettext(p)
         else: 
-          resulttext+=v.strip()
+          resulttext += v.strip()
     return resulttext    
      
 #   # Extract the text from an HTML page (no tags)
-  def gettext(self,p): 
+  def gettext(self, p): 
       v = p.string
-      resulttext=''
-      if v==None:
-          c=p.contents     
+      resulttext = ''
+      if v == None:
+          c = p.contents     
           for t in c:
-            subtext=self.gettext(t)
-            resulttext+=subtext+'\n'
+            subtext = self.gettext(t)
+            resulttext += subtext + '\n'
           return resulttext 
       else:
           return v.strip()  
@@ -78,58 +91,63 @@ class crawler:
   
   
  # Extract the text from an HTML page (no tags)
-  def gettitleonly(self,soup):
-    v=soup.string
-    if v==None:   
-      c=soup.contents     
-      resulttext=''
+  def gettitleonly(self, soup):
+    v = soup.string
+    if v == None:   
+      c = soup.contents     
+      resulttext = ''
       for t in c:
-        subtext=self.gettextonly(t)
-        resulttext+=subtext+'\n'
+        subtext = self.gettextonly(t)
+        resulttext += subtext + '\n'
       return resulttext
     else:
       return v.strip()  
 #  
   # input str 
   # output disc,demo:{'words': [{'word': 'aaa'}, {'word': 'bbb'}, {'word': 'ccc'}, {'word': 'ddd'}]}  
-  # Seperate the words by any non-whitespace character
-  def separatewords(self,text):
-    splitter=re.compile('\\W*')
-    links=[]
+  # Seperate the words by any non-whitespace character  
+  def separatewords(self, text):
+    splitter = re.compile('\\W*')
+    links = []
     for s in splitter.split(text):
-        if s!='' and s.lower() not in ignorewords:
-            links.append({'word':s.lower()})
-    words={'words':links}
-    return words
+        if s != '' and s.lower() not in ignorewords:
+            links.append(s.lower())
+    return links
 
+  def cutwords(self, directary, text):
+    splitter = re.compile('\\W*')
+    words = []
+    for s in splitter.split(text):
+        if s != '' and s.lower() not in ignorewords:
+           words.append({'word':s.lower(), "directary":directary})
+    return {'pair':words}
 
-  def addlinkref(self,urlFrom,urls,linkTexts,words):  
-    fromid=self.getUrlid('urlFrom',urlFrom)#got url origin web
-    if fromid!=None: return 
-    return connection.insert(urlFrom=urlFrom,urls=urls,words=words,linkTexts=linkTexts)
+  def addlinkref(self, urlFrom, urls, linkTexts, words):  
+    fromid = self.getUrlid('urlFrom', urlFrom)#got url origin web
+    if fromid != None: return 
+    return connection.insert(urlFrom=urlFrom, urls=urls, words=words, linkTexts=linkTexts)
     
 #   
-  def getUrlid(self,field,value):
-     return connection.selectII(field=value)  
+  def getUrlid(self, field, value):
+     return connection.selectII(field=value)    
   
   # Return true if this url is already indexed
-  def isindexed(self,url):
+  def isindexed(self, url):
     if url in index_urls:
         return True
     else:
         return False
 
-  def setindexs(self,url):
-    index_urls[url]=1
+  def setindexs(self, url):
+    index_urls[url] = 1
+    
 
 def main():
-    cr=crawler()
-    cr.crawl(['http://kiwitobes.com/wiki/Perl.html'])
-#    
-#    print cr.separatewords('aaa bbb ccc ddd')
+    cr = crawler()
+    cr.crawl(['http://kiwitobes.com/wiki/Categorical_list_of_programming_languages.html'])
 
 if __name__ == '__main__':
-   main()
+    main()
    
    
    
